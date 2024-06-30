@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_land"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.restoapp.view.HomeFragment"
-        android:label="fragment_home"
+        android:label="Today's Order"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/actionToLogin"
@@ -35,4 +35,31 @@
             android:id="@+id/actionConfirmOrderBack"
             app:destination="@id/homeFragment" />
     </dialog>
+    <fragment
+        android:id="@+id/productManagementFragment"
+        android:name="com.example.restoapp.view.ProductManagementFragment"
+        android:label="Product Management"
+        tools:layout="@layout/fragment_product_management" >
+        <action
+            android:id="@+id/actionProductForm"
+            app:destination="@id/productFormFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/logoutFragment"
+        android:name="com.example.restoapp.view.LogoutFragment"
+        android:label="fragment_logout"
+        tools:layout="@layout/fragment_logout" >
+        <action
+            android:id="@+id/actionLogout"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productFormFragment"
+        android:name="com.example.restoapp.view.ProductFormFragment"
+        android:label="fragment_product_form"
+        tools:layout="@layout/fragment_product_form" >
+        <action
+            android:id="@+id/actioinBackFromProductForm"
+            app:destination="@id/productManagementFragment" />
+    </fragment>
 </navigation>

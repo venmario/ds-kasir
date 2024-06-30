@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.auth0.android.jwt.JWT
 import com.duniasteak.restoapp.adapter.home.OrderListAdapter
 import com.duniasteak.restoapp.adapter.home.StatusListAdapter
-import com.example.restoapp.R
 import com.example.restoapp.adapter.OrderDetailAdapter
 import com.example.restoapp.databinding.FragmentHomeBinding
 import com.example.restoapp.firebase.MyFirebaseMessagingService
@@ -28,9 +26,11 @@ import com.example.restoapp.model.Order
 import com.example.restoapp.util.convertToRupiah
 import com.example.restoapp.util.getAccToken
 import com.example.restoapp.util.setNewAccToken
+import com.example.restoapp.viewmodel.LoginViewModel
 import com.example.restoapp.viewmodel.OrderViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.Date
+
 
 class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
 
@@ -38,6 +38,7 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
 
 //    private lateinit var viewModel: OrderViewModel
     private val viewModel: OrderViewModel by activityViewModels()
+    private val viewModelLogin: LoginViewModel by activityViewModels()
     private val statusListAdapter = StatusListAdapter(arrayListOf(),this)
     private val orderDetailAdapter = OrderDetailAdapter(arrayListOf())
     private lateinit var mediaPlayerNewOrder: MediaPlayer
@@ -53,22 +54,23 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        mediaPlayerNewOrder = MediaPlayer.create(context, R.raw.neworder)
+        mediaPlayerNewOrder = MediaPlayer.create(context, com.example.restoapp.R.raw.neworder)
 //        viewModel = ViewModelProvider(this).get(OrderViewModel::class.java)
         val (accToken, username) = getAccToken(requireActivity())
         accToken?.let {
-            if (it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 val expToken = JWT(it).expiresAt
                 if (expToken != null) {
                     Log.d("exp token", expToken.time.toString())
                     Log.d("now", Date().time.toString())
                     //acctoken expired
-                    if( Date().time > expToken.time){
+                    if (Date().time > expToken.time) {
                         Log.d("exp token", "token expired")
-                        setNewAccToken(requireActivity(),"","")
-                        Navigation.findNavController(view).navigate(HomeFragmentDirections.actionToLogin())
-                    }else{
-                        with(binding){
+                        setNewAccToken(requireActivity(), "", "")
+                        Navigation.findNavController(view)
+                            .navigate(HomeFragmentDirections.actionToLogin())
+                    } else {
+                        with(binding) {
                             recViewStatus?.layoutManager = LinearLayoutManager(context)
                             recViewStatus?.adapter = statusListAdapter
 
@@ -76,19 +78,22 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
                             recViewOrderDetail?.adapter = orderDetailAdapter
                             textCashierName?.text = "Cashier : $username"
                         }
-                        Log.d("orderstatuschanged","get all status trigger on onviewcreated function")
+                        Log.d(
+                            "orderstatuschanged",
+                            "get all status trigger on onviewcreated function"
+                        )
                         viewModel.getAllStatus(requireActivity())
                         observeViewModel()
                     }
                 }
-            }else {
+            } else {
                 Navigation.findNavController(view).navigate(HomeFragmentDirections.actionToLogin())
             }
         }
         disableButton()
         noOrderSelected()
         binding.refreshLayout?.setOnRefreshListener {
-            Log.d("orderstatuschanged","get all status trigger on refresh layout function")
+            Log.d("orderstatuschanged", "get all status trigger on refresh layout function")
             viewModel.getAllStatus(requireActivity())
             statusListAdapter.updateStatusList(arrayListOf())
             noOrderSelected()
@@ -164,6 +169,10 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
 
                         enableButton()
                     }
+                    "Booking" -> {
+                        binding.buttonChangeStatusOrder?.text = "Order Booked"
+                        disableButton()
+                    }
                     else -> {
                         binding.buttonChangeStatusOrder?.text = "Order Finished"
                         disableButton()
@@ -179,6 +188,7 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
                             }
                         }
                         "shopeepay" -> "ShopeePay"
+                        "Redeem Point" -> "Redeem Point"
                         else -> "GoPay"
                     }
                     textCustomerName?.text = it.fullname
@@ -201,6 +211,14 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
         viewModel.confirmedOrder.observe(viewLifecycleOwner){
             if (it){
                 noOrderSelected()
+            }
+        }
+
+        viewModelLogin.loggedOut.observe(viewLifecycleOwner){
+            if (it.isSuccess){
+                setNewAccToken(requireActivity(),"","")
+                val action = HomeFragmentDirections.actionToLogin()
+                navController.navigate(action)
             }
         }
     }
@@ -233,16 +251,16 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
     }
     private fun enableButton(){
         with(binding){
-            buttonChangeStatusOrder?.backgroundTintList = resources.getColorStateList(R.color.md_theme_primary)
-            buttonChangeStatusOrder?.setTextColor(resources.getColorStateList(R.color.md_theme_secondary))
+            buttonChangeStatusOrder?.backgroundTintList = resources.getColorStateList(com.example.restoapp.R.color.md_theme_primary)
+            buttonChangeStatusOrder?.setTextColor(resources.getColorStateList(com.example.restoapp.R.color.md_theme_secondary))
             buttonChangeStatusOrder?.isEnabled = true
         }
     }
 
     private fun disableButton(){
         with(binding){
-            buttonChangeStatusOrder?.backgroundTintList = resources.getColorStateList(R.color.md_theme_primary_disable)
-            buttonChangeStatusOrder?.setTextColor(resources.getColorStateList(R.color.md_theme_secondary_disable))
+            buttonChangeStatusOrder?.backgroundTintList = resources.getColorStateList(com.example.restoapp.R.color.md_theme_primary_disable)
+            buttonChangeStatusOrder?.setTextColor(resources.getColorStateList(com.example.restoapp.R.color.md_theme_secondary_disable))
             buttonChangeStatusOrder?.isEnabled = false
         }
     }

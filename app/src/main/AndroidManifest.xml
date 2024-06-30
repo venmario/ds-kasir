@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Kasirapp"
         tools:targetApi="31" >
+        <meta-data android:name="CLOUDINARY_URL" android:value="cloudinary://@dwy823csd"/>
 
         <activity
             android:name=".view.MainActivity"

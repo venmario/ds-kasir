@@ -66,4 +66,6 @@ dependencies {
     //firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-messaging")
+    //cloudinary
+    implementation("com.cloudinary:cloudinary-android:2.8.0")
 }

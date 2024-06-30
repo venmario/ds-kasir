@@ -76,6 +76,7 @@ class OrderConfirmFragment : BottomSheetDialogFragment() {
                             }
                         }
                         "shopeepay" -> "ShopeePay"
+                        "Redeem Point" -> "Redeem Point"
                         else -> "GoPay"
                     }
 

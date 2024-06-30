@@ -1,21 +1,30 @@
 package com.example.restoapp.viewmodel
 
+import android.app.Activity
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.restoapp.global.GlobalData
 import com.example.restoapp.model.LoginResponse
+import com.example.restoapp.model.LogoutResponse
 import com.example.restoapp.model.ServiceResult
 import com.example.restoapp.model.User
+import com.example.restoapp.util.getAuthorizationHeaders
+import com.example.restoapp.util.setNewAccToken
 import com.google.gson.Gson
 import com.midtrans.sdk.corekit.internal.util.SingleLiveEvent
 import org.json.JSONObject
 
 class LoginViewModel(application: Application): AndroidViewModel(application) {
     val serviceResult = SingleLiveEvent<ServiceResult<LoginResponse>>()
+
+    private val mutableLogout = MutableLiveData<ServiceResult<Void>>()
+    val loggedOut: LiveData<ServiceResult<Void>> get() = mutableLogout
 
     val cashierUrl = "${GlobalData.apiUrl}/cashier"
     val TAG = "volleyTag"
@@ -52,6 +61,40 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
                 params["password"] = password
                 params["oldFcmToken"] = oldFcmToken
                 params["currentFcmToken"] = currentFcmToken
+                return params
+            }
+        }
+        stringRequest.tag = TAG
+        queue?.add(stringRequest)
+    }
+
+    fun logout(activity: Activity, fcmToken:String?){
+        Log.d("logout", "logout")
+        val url = "$cashierUrl/logout"
+        queue = Volley.newRequestQueue(getApplication())
+        val stringRequest = object:StringRequest(
+            Method.POST,url,{
+                Log.d("Logout", it.toString())
+                val result = JSONObject(it)
+
+                val isSuccess = result.getBoolean("isSuccess")
+                if (isSuccess){
+                    mutableLogout.value = ServiceResult(true,null,null)
+                }else{
+                    val errorMessage:String? = result.getString("errorMessage")
+                    mutableLogout.value = ServiceResult(false,errorMessage,null)
+                }
+            },{
+                Log.d("Logout", it.message.toString())
+            }
+        ){
+            override fun getHeaders(): MutableMap<String, String> {
+                return getAuthorizationHeaders(activity)
+            }
+
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String,String>()
+                params["fcmToken"] = fcmToken.toString()
                 return params
             }
         }

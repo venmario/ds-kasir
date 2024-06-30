@@ -45,6 +45,11 @@ data class LoginResponse(
     val token:String?
 )
 
+data class LogoutResponse(
+    var isSuccess:Boolean,
+    var errorMessage: String?
+)
+
 data class OrderDetail(
     val product:String,
     val quantity:Int,
@@ -57,3 +62,28 @@ data class ServiceResult<T>(
     var errorMessage: String?,
     var data:T?
 )
+
+data class Product(
+    var id:Int?,
+    var name:String?,
+    var description:String?,
+    var image:String?,
+    var available:Boolean?,
+    @SerializedName("category_id")
+    var categoryId:Int?,
+    var price:Int?,
+    var poin:Int?
+){
+    constructor(): this(
+        null,null,null,null,null,null,null,null
+    )
+}
+data class Category(
+    var id:Int,
+    var name:String,
+    var product:ArrayList<Product>?
+){
+    override fun toString(): String {
+        return this.name
+    }
+}

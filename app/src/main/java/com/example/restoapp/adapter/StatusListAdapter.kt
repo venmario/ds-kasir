@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.restoapp.databinding.RecviewStatusBinding
 import com.example.restoapp.model.Status
-import com.example.restoapp.view.SpacesItemDecoration
-import com.example.restoapp.viewmodel.OrderViewModel
 
 class StatusListAdapter(private val statusList:ArrayList<Status>, private val listener: OrderListAdapter.IOrderListListener):RecyclerView.Adapter<StatusListAdapter.StatusListViewHolder>() {
     class StatusListViewHolder(var binding: RecviewStatusBinding): RecyclerView.ViewHolder(binding.root)
