@@ -87,3 +87,15 @@ data class Category(
         return this.name
     }
 }
+
+data class Income(
+    val income:Int,
+    val totalTransaction:Int,
+    val date:String
+)
+
+data class Store(
+    var id:Int,
+    var open:String,
+    var close:String
+)

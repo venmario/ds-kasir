@@ -15,6 +15,7 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.replace
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navView: NavigationView = binding.navView
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.homeFragment, R.id.productManagementFragment, R.id.logoutFragment
+                R.id.homeFragment, R.id.productManagementFragment,R.id.incomeFragment,R.id.storeFragment, R.id.logoutFragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -141,6 +142,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .replace(R.id.homeFragment, HomeFragment()).commit()
             R.id.productManagementFragment -> supportFragmentManager.beginTransaction()
                 .replace(R.id.productManagementFragment, ProductManagementFragment()).commit()
+            R.id.incomeFragment -> supportFragmentManager.beginTransaction()
+                .replace(R.id.incomeFragment, IncomeFragment()).commit()
+            R.id.storeFragment -> supportFragmentManager.beginTransaction()
+                .replace(R.id.storeFragment, StoreFragment()).commit()
             R.id.logoutFragment -> {
                 Log.d("logout","logout")
                 supportFragmentManager.beginTransaction()

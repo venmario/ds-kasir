@@ -5,11 +5,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
@@ -35,8 +38,8 @@ class ProductFormFragment : Fragment() {
 
     private lateinit var binding: FragmentProductFormBinding
     private val viewModel: ProductViewModel by activityViewModels()
-    private lateinit var adapterCategory : ArrayAdapter<Category>
-    private var items:ArrayList<Category> = arrayListOf()
+    private lateinit var adapterCategory: ArrayAdapter<Category>
+    private var items: ArrayList<Category> = arrayListOf()
     private lateinit var product: Product
     private lateinit var updatedProduct: Product
     private lateinit var navController: NavController
@@ -54,15 +57,54 @@ class ProductFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+        with(binding) {
+            textPriceLayout?.editText?.doOnTextChanged { text, _, _, _ ->
+                if (!TextUtils.isEmpty(text)){
+                    val price = text.toString().toInt()
+                    if (price / 1000 == 0) {
+                        textPriceLayout.error = "Minimal price is 1000"
+                        disableButton()
+                    } else {
+                        textPriceLayout.error = null
+                        textPriceLayout.isErrorEnabled = false
+                        enableButton()
+                    }
+                }else{
+                    textPriceLayout.error = "Please input product price!"
+                    disableButton()
+                }
+            }
+            textNameLayout?.editText?.doOnTextChanged { text, _, _, _ ->
+                if (TextUtils.isEmpty(text)) {
+                    textNameLayout.error = "Please input the product name"
+                    disableButton()
+                } else {
+                    textNameLayout.error = null
+                    textNameLayout.isErrorEnabled = false
+                    enableButton()
+                }
+            }
+            textDescriptionLayout?.editText?.doOnTextChanged { text, _, _, _ ->
+                if (TextUtils.isEmpty(text)) {
+                    textDescriptionLayout.error = "Please input the product description"
+                    disableButton()
+                } else {
+                    textDescriptionLayout.error = null
+                    textDescriptionLayout.isErrorEnabled = false
+                    enableButton()
+                }
+            }
+        }
         observeViewModel()
     }
 
     private fun observeViewModel() {
-        viewModel.categories.observe(viewLifecycleOwner){
-            if (it.isNotEmpty()){
+        viewModel.categories.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
                 items = it
-                Log.d("categories",it.toString())
-                adapterCategory = ArrayAdapter<Category>(requireContext(), R.layout.item_category, items)
+                Log.d("categories", it.toString())
+                adapterCategory =
+                    ArrayAdapter<Category>(requireContext(), R.layout.item_category, items)
                 (binding.itemCategory as MaterialAutoCompleteTextView).apply {
                     setAdapter(adapterCategory)
                     setText(items[0].name, false)
@@ -71,22 +113,31 @@ class ProductFormFragment : Fragment() {
         }
         viewModel.selectedProduct.observe(viewLifecycleOwner) {
             if (it != null) {//update product
-                product = Product(it.id,it.name,it.description,it.image,it.available,it.categoryId,it.price,it.poin)
+                product = Product(
+                    it.id,
+                    it.name,
+                    it.description,
+                    it.image,
+                    it.available,
+                    it.categoryId,
+                    it.price,
+                    it.poin
+                )
                 updatedProduct = Product()
                 updatedProduct.id = product.id
-                with(binding){
+                with(binding) {
                     textName?.setText(product.name)
                     textPrice?.setText(product.price!!.toString())
                     textDescription?.setText(product.description)
-                    if (product.available == true){
+                    if (product.available == true) {
                         radioGroup?.check(R.id.radioAvailable)
-                    }else{
+                    } else {
                         radioGroup?.check(R.id.radioNotAvailable)
                     }
                     imageView?.loadImage(product.image, progressBar!!)
-                    for (item in items){
-                        if(item.id == product.categoryId){
-                            (itemCategory as MaterialAutoCompleteTextView).apply{
+                    for (item in items) {
+                        if (item.id == product.categoryId) {
+                            (itemCategory as MaterialAutoCompleteTextView).apply {
                                 setText(item.name, false)
                             }
                             break
@@ -94,7 +145,7 @@ class ProductFormFragment : Fragment() {
                     }
 
                     var categoryId = product.categoryId
-                    itemCategory?.setOnItemClickListener{ _, _, position, _ ->
+                    itemCategory?.setOnItemClickListener { _, _, position, _ ->
                         categoryId = items[position].id
                     }
 
@@ -102,29 +153,32 @@ class ProductFormFragment : Fragment() {
                         val i = Intent()
                         i.setType("image/*")
                         i.setAction(Intent.ACTION_GET_CONTENT)
-                        Log.d("select image","update")
+                        Log.d("select image", "update")
 
-                        startActivityForResult(Intent.createChooser(i, "Select Image"), UPDATE_IMAGE)
+                        startActivityForResult(
+                            Intent.createChooser(i, "Select Image"),
+                            UPDATE_IMAGE
+                        )
                     }
 
                     buttonSave?.setOnClickListener {
-                        if (textName?.text.toString() != product.name){
+                        if (textName?.text.toString() != product.name) {
                             updatedProduct.name = textName?.text.toString()
                         }
-                        if(textPrice?.text.toString().toInt() != product.price){
+                        if (textPrice?.text.toString().toInt() != product.price) {
                             updatedProduct.price = textPrice?.text.toString().toInt()
-                            updatedProduct.poin = updatedProduct.price!!/1000
+                            updatedProduct.poin = updatedProduct.price!! / 1000
                         }
-                        if(textDescription?.text.toString() != product.description){
+                        if (textDescription?.text.toString() != product.description) {
                             updatedProduct.description = textDescription?.text.toString()
                         }
                         val selectedId = radioGroup?.checkedRadioButtonId
                         val currentAvailable = radioAvailable?.id == selectedId
                         val prevAvailable = product.available
-                        if(prevAvailable != currentAvailable){
+                        if (prevAvailable != currentAvailable) {
                             updatedProduct.available = currentAvailable
                         }
-                        if(categoryId != product.id){
+                        if (categoryId != product.id) {
                             updatedProduct.categoryId = categoryId
                         }
                         Log.d("updated produc", updatedProduct.toString())
@@ -133,13 +187,14 @@ class ProductFormFragment : Fragment() {
                         navController.popBackStack()
                     }
                 }
-            }else{//create product
+            } else {//create product
                 product = Product()
-                product.image = "https://plus.unsplash.com/premium_photo-1666978195894-b2e3a3f14d9b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                with(binding){
+                product.image =
+                    "https://plus.unsplash.com/premium_photo-1666978195894-b2e3a3f14d9b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                with(binding) {
 
                     var categoryId = items[0].id
-                    itemCategory?.setOnItemClickListener{ _, _, position, _ ->
+                    itemCategory?.setOnItemClickListener { _, _, position, _ ->
                         categoryId = items[position].id
                     }
 
@@ -149,9 +204,12 @@ class ProductFormFragment : Fragment() {
                         val i = Intent()
                         i.setType("image/*")
                         i.setAction(Intent.ACTION_GET_CONTENT)
-                        Log.d("select image","create")
+                        Log.d("select image", "create")
 
-                        startActivityForResult(Intent.createChooser(i, "Select Image"), SELECT_IMAGE)
+                        startActivityForResult(
+                            Intent.createChooser(i, "Select Image"),
+                            SELECT_IMAGE
+                        )
                     }
 
                     buttonSave?.setOnClickListener {
@@ -179,23 +237,24 @@ class ProductFormFragment : Fragment() {
                 val selectedImageUri = data?.data
                 if (selectedImageUri != null) {
                     binding.imageView?.setImageURI(selectedImageUri)
-                    uploadToCloudinary(selectedImageUri,"create")
+                    uploadToCloudinary(selectedImageUri, "create")
                 }
-            }else if (requestCode == UPDATE_IMAGE){
+            } else if (requestCode == UPDATE_IMAGE) {
                 val selectedImageUri = data?.data
                 if (selectedImageUri != null) {
                     binding.imageView?.setImageURI(selectedImageUri)
-                    uploadToCloudinary(selectedImageUri,"update")
+                    uploadToCloudinary(selectedImageUri, "update")
                 }
             }
         }
     }
 
-    private fun uploadToCloudinary(imageURI: Uri, type:String) {
+    private fun uploadToCloudinary(imageURI: Uri, type: String) {
 
-        MediaManager.get().upload(imageURI).callback(object:UploadCallback{
+        MediaManager.get().upload(imageURI).callback(object : UploadCallback {
             override fun onStart(requestId: String?) {
                 binding.buttonUploadImage?.text = "Start upload"
+                disableButton()
             }
 
             override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
@@ -205,12 +264,13 @@ class ProductFormFragment : Fragment() {
             override fun onSuccess(requestId: String?, resultData: MutableMap<Any?, Any?>?) {
                 Log.d("url", resultData?.get("secure_url").toString())
                 val url = resultData?.get("secure_url").toString()
-                if (type == "create"){
+                if (type == "create") {
                     product.image = url
-                }else{
+                } else {
                     updatedProduct.image = url
                 }
                 binding.buttonUploadImage?.text = "Uploaded"
+                enableButton()
             }
 
             override fun onError(requestId: String?, error: ErrorInfo?) {
@@ -226,5 +286,22 @@ class ProductFormFragment : Fragment() {
         }).dispatch();
     }
 
+    private fun disableButton() {
+        with(binding) {
+            buttonSave?.backgroundTintList =
+                resources.getColorStateList(com.example.restoapp.R.color.md_theme_primary_disable)
+            buttonSave?.setTextColor(resources.getColorStateList(com.example.restoapp.R.color.md_theme_secondary_disable))
+            buttonSave?.isEnabled = false
+        }
+    }
+
+    private fun enableButton() {
+        with(binding) {
+            buttonSave?.backgroundTintList =
+                resources.getColorStateList(com.example.restoapp.R.color.md_theme_primary)
+            buttonSave?.setTextColor(resources.getColorStateList(com.example.restoapp.R.color.md_theme_secondary))
+            buttonSave?.isEnabled = true
+        }
+    }
 
 }

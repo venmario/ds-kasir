@@ -114,7 +114,7 @@ class ProductManagementFragment : Fragment(), ProductListAdapter.IProductListLis
 
     override fun deleteProduct(productId: Int) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Pick Up Order")
+            .setTitle("Delete Product")
             .setMessage("Are you sure want to delete this product?")
             .setNegativeButton("No"){ dialog,_->
                 dialog.dismiss()

@@ -62,4 +62,14 @@
             android:id="@+id/actioinBackFromProductForm"
             app:destination="@id/productManagementFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/storeFragment"
+        android:name="com.example.restoapp.view.StoreFragment"
+        android:label="Store Management"
+        tools:layout="@layout/fragment_store" />
+    <fragment
+        android:id="@+id/incomeFragment"
+        android:name="com.example.restoapp.view.IncomeFragment"
+        android:label="income"
+        tools:layout="@layout/fragment_income" />
 </navigation>
