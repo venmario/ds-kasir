@@ -69,6 +69,7 @@ class LoginFragment : Fragment() {
             viewModel.login(username,password,oldFcmToken!!,currentFcmToken!!)
             viewModel.serviceResult.observe(viewLifecycleOwner) { sr ->
                 if (sr.isSuccess) {
+                    Log.d("login","success")
                     val editor: SharedPreferences.Editor = shared.edit()
                     editor.putString(ACCESS_TOKEN, sr.data?.token)
                     editor.putString(USERNAME, sr.data?.user?.username)

@@ -46,6 +46,10 @@ class ProductFormFragment : Fragment() {
     val SELECT_IMAGE = 200
     val UPDATE_IMAGE = 201
 
+    private var isProductNameError = true
+    private var isPriceError = true
+    private var isDescriptionError = true
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,28 +61,34 @@ class ProductFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+        disableButton()
         with(binding) {
             textPriceLayout?.editText?.doOnTextChanged { text, _, _, _ ->
                 if (!TextUtils.isEmpty(text)){
                     val price = text.toString().toInt()
                     if (price / 1000 == 0) {
                         textPriceLayout.error = "Minimal price is 1000"
+                        isPriceError = true
                         disableButton()
                     } else {
                         textPriceLayout.error = null
                         textPriceLayout.isErrorEnabled = false
+                        isPriceError = false
                         enableButton()
                     }
                 }else{
+                    isPriceError = true
                     textPriceLayout.error = "Please input product price!"
                     disableButton()
                 }
             }
             textNameLayout?.editText?.doOnTextChanged { text, _, _, _ ->
                 if (TextUtils.isEmpty(text)) {
+                    isProductNameError = true
                     textNameLayout.error = "Please input the product name"
                     disableButton()
                 } else {
+                    isProductNameError = false
                     textNameLayout.error = null
                     textNameLayout.isErrorEnabled = false
                     enableButton()
@@ -86,9 +96,11 @@ class ProductFormFragment : Fragment() {
             }
             textDescriptionLayout?.editText?.doOnTextChanged { text, _, _, _ ->
                 if (TextUtils.isEmpty(text)) {
+                    isDescriptionError = true
                     textDescriptionLayout.error = "Please input the product description"
                     disableButton()
                 } else {
+                    isDescriptionError = false
                     textDescriptionLayout.error = null
                     textDescriptionLayout.isErrorEnabled = false
                     enableButton()
@@ -297,11 +309,12 @@ class ProductFormFragment : Fragment() {
 
     private fun enableButton() {
         with(binding) {
-            buttonSave?.backgroundTintList =
-                resources.getColorStateList(com.example.restoapp.R.color.md_theme_primary)
-            buttonSave?.setTextColor(resources.getColorStateList(com.example.restoapp.R.color.md_theme_secondary))
-            buttonSave?.isEnabled = true
+            if (!isProductNameError && !isPriceError && !isDescriptionError){
+                buttonSave?.backgroundTintList =
+                    resources.getColorStateList(com.example.restoapp.R.color.md_theme_primary)
+                buttonSave?.setTextColor(resources.getColorStateList(com.example.restoapp.R.color.md_theme_secondary))
+                buttonSave?.isEnabled = true
+            }
         }
     }
-
 }

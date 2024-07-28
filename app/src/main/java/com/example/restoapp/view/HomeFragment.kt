@@ -217,6 +217,7 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
         viewModelLogin.loggedOut.observe(viewLifecycleOwner){
             if (it.isSuccess){
                 setNewAccToken(requireActivity(),"","")
+                viewModelLogin.resetLoggedOut()
                 val action = HomeFragmentDirections.actionToLogin()
                 navController.navigate(action)
             }

@@ -101,4 +101,8 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
         stringRequest.tag = TAG
         queue?.add(stringRequest)
     }
+
+    fun resetLoggedOut(){
+        mutableLogout.value = ServiceResult(false,null,null)
+    }
 }
