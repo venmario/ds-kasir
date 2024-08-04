@@ -23,6 +23,9 @@ import org.json.JSONObject
 class OrderViewModel(application: Application): AndroidViewModel(application) {
     val serviceResultOrderList= SingleLiveEvent<ServiceResult<ArrayList<Status>>>()
 
+    private val mutableOrderCancel = SingleLiveEvent<ServiceResult<Void>>()
+    val canceledOrder: LiveData<ServiceResult<Void>> get() = mutableOrderCancel
+
     private val mutableOrderConfirm = MutableLiveData<Boolean>()
     val confirmedOrder: LiveData<Boolean> get() = mutableOrderConfirm
 
@@ -195,5 +198,43 @@ class OrderViewModel(application: Application): AndroidViewModel(application) {
         }
         stringRequest.tag = TAG
         queue?.add(stringRequest)
+    }
+    fun refundOrder(activity: Activity, orderId: String, reason:String){
+        Log.d("select order","select order")
+        val url = "$cashierUrl/refundOrder/${orderId}"
+        queue = Volley.newRequestQueue(getApplication())
+        val stringRequest = object: StringRequest(
+            Method.POST, url,{
+                val result = JSONObject(it)
+                Log.d("refund", "response : $it")
+                val status = result.getBoolean("isSuccess")
+                if (status){
+                    mutableOrderCancel.value = ServiceResult(true, null, null)
+                }else{
+                    val errMessage = result.getString("errorMessage")
+                    mutableOrderCancel.value = ServiceResult(false, errMessage, null)
+                }
+            },{
+                if (it.message!=null){
+                    Log.d("order error", it.message!!)
+                    mutableOrderCancel.value = ServiceResult(false, it.message.toString(), null)
+                }
+            }
+        ){
+            override fun getParams(): MutableMap<String, String>? {
+                val body = HashMap<String, String>()
+                body["reason"] = reason
+                return body
+            }
+            override fun getHeaders(): MutableMap<String, String> {
+                return getAuthorizationHeaders(activity)
+            }
+        }
+        stringRequest.tag = TAG
+        queue?.add(stringRequest)
+    }
+    override fun onCleared() {
+        super.onCleared()
+        queue?.cancelAll(TAG)
     }
 }

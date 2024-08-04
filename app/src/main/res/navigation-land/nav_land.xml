@@ -25,6 +25,9 @@
         <action
             android:id="@+id/actionConfirmOrder"
             app:destination="@id/orderConfirmFragment" />
+        <action
+            android:id="@+id/actionCancelOrder"
+            app:destination="@id/cancelOrderOptionFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderConfirmFragment"
@@ -72,4 +75,13 @@
         android:name="com.example.restoapp.view.IncomeFragment"
         android:label="Income"
         tools:layout="@layout/fragment_income" />
+    <dialog
+        android:id="@+id/cancelOrderOptionFragment"
+        android:name="com.example.restoapp.view.CancelOrderOptionFragment"
+        android:label="fragment_cancel_order_option"
+        tools:layout="@layout/fragment_cancel_order_option" >
+        <action
+            android:id="@+id/actionBackFromCancelOrder"
+            app:destination="@id/homeFragment" />
+    </dialog>
 </navigation>

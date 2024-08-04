@@ -51,7 +51,7 @@
                 app:layout_constraintTop_toBottomOf="@id/textCashierName"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/buttonChangeStatusOrder"/>
+                app:layout_constraintBottom_toTopOf="@id/layoutChangeStatusOrder"/>
             <TextView
                 android:background="@color/md_theme_primary"
                 android:padding="16dp"
@@ -80,7 +80,7 @@
                 android:id="@+id/orderInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/buttonChangeStatusOrder"
+                app:layout_constraintBottom_toTopOf="@id/layoutChangeStatusOrder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:orientation="vertical">
@@ -161,20 +161,42 @@
                 </LinearLayout>
 
             </LinearLayout>
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonChangeStatusOrder"
+            <LinearLayout
+                android:id="@+id/layoutChangeStatusOrder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/md_theme_primary_disable"
-                app:cornerRadius="8dp"
-                android:text="Please choose an order"
-                android:textColor="@color/md_theme_secondary_disable"
-                android:fontFamily="@font/futura_bold"
-                android:layout_marginHorizontal="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:enabled="false"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/md_theme_surface"
+                    app:strokeColor="@color/md_theme_primary"
+                    app:strokeWidth="2dp"
+                    app:cornerRadius="8dp"
+                    android:visibility="gone"
+                    android:text="Cancel"
+                    android:textColor="@color/md_theme_secondary"
+                    android:fontFamily="@font/futura_bold"
+                    android:layout_marginHorizontal="8dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonChangeStatusOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:backgroundTint="@color/md_theme_primary_disable"
+                    app:cornerRadius="8dp"
+                    android:text="Please choose an order"
+                    android:textColor="@color/md_theme_secondary_disable"
+                    android:fontFamily="@font/futura_bold"
+                    android:layout_marginHorizontal="8dp"
+                    android:enabled="false"/>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </LinearLayout>

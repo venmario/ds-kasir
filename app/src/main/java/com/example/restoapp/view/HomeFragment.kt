@@ -115,11 +115,18 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
                 orderSelected()
                 orderDetailAdapter.updateOrderDetailList(it.orderDetails!!)
                 binding.loadingOrderDetail?.visibility = View.GONE
+                binding.buttonCancel?.visibility = View.GONE
                 Log.d("order", it.toString())
                 when(it.status){
                     "In Waiting List"-> {
                         enableButton()
                         with(binding){
+                            buttonCancel?.visibility = View.VISIBLE
+                            buttonCancel?.setOnClickListener {
+                                val action = HomeFragmentDirections.actionCancelOrder()
+                                navController.navigate(action)
+                            }
+
                             buttonChangeStatusOrder?.text = "Confirm Order"
                             buttonChangeStatusOrder?.setOnClickListener {_->
                                 Log.d("confirm order","clicked")
@@ -170,7 +177,18 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
                         enableButton()
                     }
                     "Booking" -> {
-                        binding.buttonChangeStatusOrder?.text = "Order Booked"
+                        with(binding){
+                            buttonCancel?.visibility = View.VISIBLE
+                            buttonCancel?.setOnClickListener {
+                                val action = HomeFragmentDirections.actionCancelOrder()
+                                navController.navigate(action)
+                            }
+                            buttonChangeStatusOrder?.text = "Order Booked"
+                        }
+                        disableButton()
+                    }
+                    "Refund" -> {
+                        binding.buttonChangeStatusOrder?.text = "Order Refunded"
                         disableButton()
                     }
                     else -> {
@@ -239,6 +257,7 @@ class HomeFragment : Fragment(), OrderListAdapter.IOrderListListener {
             recViewOrderDetail?.visibility = View.GONE
             orderInfo?.visibility = View.GONE
             buttonChangeStatusOrder?.text = "Please choose an order"
+            buttonCancel?.visibility = View.GONE
         }
         disableButton()
     }

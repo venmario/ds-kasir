@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.CancelOrderOptionFragment"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/md_theme_secondary"
+        android:textSize="17sp"
+        android:text="Input Refund Reason"
+        android:paddingVertical="12dp"
+        android:fontFamily="@font/futura_medium"
+        android:textAlignment="center"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dividerThickness="0.5dp"
+        app:dividerColor="@color/md_theme_secondaryLighter"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:paddingHorizontal="8dp"
+        app:endIconMode="clear_text"
+        app:boxStrokeColor="@color/md_theme_primary"
+        android:id="@+id/textReasonLayout"
+        android:hint="Refund Reason">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:gravity="top"
+            android:maxLines="2"
+            android:inputType="textMultiLine"
+            android:id="@+id/textReason"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="32dp"
+        android:paddingHorizontal="8dp">
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/md_theme_surface"
+            app:strokeColor="@color/md_theme_primary"
+            app:strokeWidth="2dp"
+            android:text="Cancel"
+            android:textColor="@color/md_theme_secondary"
+            android:fontFamily="@font/futura_medium"
+            android:textSize="16sp"/>
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="0dp"/>
+        <Button
+            android:id="@+id/buttonConfirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/md_theme_primary"
+            android:text="Confirm"
+            android:textColor="@color/md_theme_secondary"
+            android:fontFamily="@font/futura_bold"
+            android:textSize="16sp"/>
+    </LinearLayout>
+</LinearLayout>
